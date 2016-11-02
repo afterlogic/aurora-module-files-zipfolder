@@ -14,8 +14,8 @@ class FilesZipFolderModule extends AApiModule
 		$this->subscribeEvent('Files::GetFiles::after', array($this, 'onAfterGetFiles'), 50);
 		$this->subscribeEvent('Files::CreateFolder::before', array($this, 'onBeforeCreateFolder'), 50);
 		$this->subscribeEvent('Files::CreateFile', array($this, 'onCreateFile'), 50);
-		$this->subscribeEvent('Files::Delete::before', array($this, 'onBeforeDelete'), 50);
-		$this->subscribeEvent('Files::Rename::before', array($this, 'onBeforeRename'), 50);
+		$this->subscribeEvent('Files::Delete::after', array($this, 'onAfterDelete'), 50);
+		$this->subscribeEvent('Files::Rename::after', array($this, 'onAfterRename'), 50);
 		$this->subscribeEvent('Files::Move::before', array($this, 'onBeforeMove'), 50);
 		$this->subscribeEvent('Files::Copy::before', array($this, 'onBeforeCopy'), 50); 
 		$this->subscribeEvent('Files::GetFileInfo::after', array($this, 'onAfterGetFileInfo'));
@@ -126,8 +126,9 @@ class FilesZipFolderModule extends AApiModule
 		}
 	}	
 
-	public function onBeforeGetFiles($aArgs, &$mResult)
+	public function onBeforeGetFiles(&$aArgs, &$mResult)
 	{
+		$bResult = false;
 		if (isset($aArgs['Path']))
 		{
 			$sPath = $aArgs['Path'];
@@ -139,13 +140,17 @@ class FilesZipFolderModule extends AApiModule
 			$aPathInfo = pathinfo($sPath);
 			if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
 			{
-				$aArgs['Name'] = basename($sPath);
-				$aArgs['Path'] = dirname($sPath);
+				$aGetFileInfoArgs = array(
+					'Name' => basename($sPath),
+					'Path' => dirname($sPath),
+					'UserId' => $aArgs['UserId'],
+					'Type' => $aArgs['Type']
+				);
 				$oFileInfo = false;
 				\CApi::GetModuleManager()->broadcastEvent(
 					'Files', 
 					'GetFileInfo::after', 
-					$aArgs, 
+					$aGetFileInfoArgs, 
 					$oFileInfo
 				);
 				if ($oFileInfo)
@@ -174,6 +179,7 @@ class FilesZipFolderModule extends AApiModule
 							$oItem /*@var $oItem \CFileStorageItem */ = new  \CFileStorageItem();
 							$oItem->Id = $aStat['name'];
 							$oItem->Path = $sPath;
+							$oItem->TypeStr = $aArgs['Type'];
 							$oItem->FullPath = $oItem->Path . '$ZIP:' . $oItem->Id;
 							if ($aStat['size'] === 0)
 							{
@@ -195,8 +201,11 @@ class FilesZipFolderModule extends AApiModule
 						}
 					}
 				}
+				$bResult = true;
 			}
 		}
+		
+		return $bResult;
 	}
 	
 	/**
@@ -207,8 +216,6 @@ class FilesZipFolderModule extends AApiModule
 	 */
 	public function onAfterGetFiles($aArgs, &$mResult)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
-		
 		if (isset($mResult['Items']) && is_array($mResult['Items']))
 		{
 			foreach($mResult['Items'] as $oItem)
@@ -248,8 +255,37 @@ class FilesZipFolderModule extends AApiModule
 	 * @ignore
 	 * @param array $aData
 	 */
-	public function onBeforeDelete($aArgs, &$mResult)
+	public function onAfterDelete($aArgs, &$mResult)
 	{
+		$bResult = false;
+		
+		foreach ($aArgs['Items'] as $aItem)
+		{
+			$sPath = $aItem['Path'];
+			$aPathInfo = pathinfo($sPath);
+			if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
+			{
+				$sName = $aItem['Name'];
+				$aGetFileInfoArgs = $aArgs;
+				$aGetFileInfoArgs['Name'] = basename($sPath);
+				$aGetFileInfoArgs['Path'] = dirname($sPath);
+				$oFileInfo = false;
+				\CApi::GetModuleManager()->broadcastEvent(
+					'Files', 
+					'GetFileInfo::after', 
+					$aGetFileInfoArgs, 
+					$oFileInfo
+				);
+				if ($oFileInfo)
+				{
+					$za = new ZipArchive(); 
+					$za->open($oFileInfo->RealPath);
+					$mResult = $za->deleteName($sName);
+					$bResult = $mResult;
+				}
+			}
+		}
+		return $bResult;
 	}	
 
 	/**
@@ -258,8 +294,41 @@ class FilesZipFolderModule extends AApiModule
 	 * @ignore
 	 * @param array $aData
 	 */
-	public function onBeforeRename($aArgs, &$mResult)
+	public function onAfterRename($aArgs, &$mResult)
 	{
+		$sPath = $aArgs['Path'];
+		$aPathInfo = pathinfo($sPath);
+		if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
+		{
+			$sName = $aArgs['Name'];
+			$sNewName = $aArgs['NewName'];
+			$aArgs['Name'] = basename($sPath);
+			$aArgs['Path'] = dirname($sPath);
+			$oFileInfo = false;
+			\CApi::GetModuleManager()->broadcastEvent(
+				'Files', 
+				'GetFileInfo::after', 
+				$aArgs, 
+				$oFileInfo
+			);
+			if ($oFileInfo)
+			{
+				$za = new ZipArchive(); 
+				$za->open($oFileInfo->RealPath);
+				$sFileDir = dirname($sName);
+				if ($sFileDir !== '.')
+				{
+					$sNewFullPath = $sFileDir . $sNewName;
+				}
+				else 
+				{
+					$sNewFullPath = $sNewName;
+				}
+				$mResult = $za->renameName($sName, $sNewFullPath);
+				$za->close();
+			}
+		}
+		return $mResult;
 	}	
 
 	/**
