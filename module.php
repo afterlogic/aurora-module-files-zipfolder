@@ -159,6 +159,7 @@ class FilesZipFolderModule extends AApiModule
 					$za->open($oFileInfo->RealPath); 
 
 					$mResult = array();
+					$aItems = array();
 					for( $i = 0; $i < $za->numFiles; $i++ )
 					{ 
 						$aStat = $za->statIndex($i); 
@@ -189,17 +190,19 @@ class FilesZipFolderModule extends AApiModule
 							{
 								$oItem->Size = $aStat['size'];
 							}
+							$oItem->ContentType = \MailSo\Base\Utils::MimeContentType($oItem->Id);
 
 							$aPath = explode('/', $sStatName);
 							$sName = $aPath[0];
 
-							if (!isset($mResult['Items'][$sName]))
+							if (!isset($aItems[$sName]))
 							{
 								$oItem->Name = $sName;
-								$mResult['Items'][$sName] = $oItem;
+								$aItems[$sName] = $oItem;
 							}
 						}
 					}
+					$mResult['Items'] = array_values($aItems);
 				}
 				$bResult = true;
 			}
