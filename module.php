@@ -385,10 +385,10 @@ class FilesZipFolderModule extends AApiModule
 	 * @param string $sType
 	 * @param string $sPath
 	 * @param string $sName
-	 * @param boolean $bResult
+	 * @param mixed $mResult
 	 * @param boolean $bBreak
 	 */
-	public function onAfterGetFileInfo($aArgs, &$bResult)
+	public function onAfterGetFileInfo($aArgs, &$mResult)
 	{
 	}	
 	
