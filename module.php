@@ -142,7 +142,7 @@ class FilesZipFolderModule extends AApiModule
 			{
 				$aGetFileInfoArgs = array(
 					'Name' => basename($sPath),
-					'Path' => dirname($sPath),
+					'Path' => trim(dirname($sPath), '\\'),
 					'UserId' => $aArgs['UserId'],
 					'Type' => $aArgs['Type']
 				);
