@@ -89,7 +89,7 @@ class FilesZipFolderModule extends AApiModule
 	 * Writes to the $mResult variable open file source if $sType is DropBox account type.
 	 * 
 	 * @ignore
-	 * @param int $iUserId Identificator of the authenticated user.
+	 * @param int $iUserId Identifier of the authenticated user.
 	 * @param string $sType Service type.
 	 * @param string $sPath File path.
 	 * @param string $sName File name.
