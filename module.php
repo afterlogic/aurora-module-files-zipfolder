@@ -227,6 +227,7 @@ class FilesZipFolderModule extends AApiModule
 				if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
 				{
 					$oItem->MainAction = 'list';
+					$oItem->UnshiftAction('list');
 				}
 			}
 		}
