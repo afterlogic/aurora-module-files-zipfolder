@@ -2,7 +2,7 @@
 
 namespace Aurora\Modules;
 
-class FilesZipFolderModule extends \AApiModule
+class FilesZipFolderModule extends \Aurora\System\AbstractModule
 {
 	/***** private functions *****/
 	/**
@@ -58,7 +58,7 @@ class FilesZipFolderModule extends \AApiModule
 	 */
 	protected function populateFileInfo($sType, $oClient, $aData)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$mResult = false;
 		if ($aData && \is_array($aData))
@@ -109,7 +109,7 @@ class FilesZipFolderModule extends \AApiModule
 			$aArgs['Name'] = \basename($sPath);
 			$aArgs['Path'] = \dirname($sPath);
 			$oFileInfo = false;
-			\CApi::GetModuleManager()->broadcastEvent(
+			\Aurora\System\Api::GetModuleManager()->broadcastEvent(
 				'Files', 
 				'GetFileInfo::after', 
 				$aArgs, 
@@ -150,7 +150,7 @@ class FilesZipFolderModule extends \AApiModule
 					'Type' => $aArgs['Type']
 				);
 				$oFileInfo = false;
-				\CApi::GetModuleManager()->broadcastEvent(
+				\Aurora\System\Api::GetModuleManager()->broadcastEvent(
 					'Files', 
 					'GetFileInfo::after', 
 					$aGetFileInfoArgs, 
@@ -277,7 +277,7 @@ class FilesZipFolderModule extends \AApiModule
 				$aGetFileInfoArgs['Name'] = \basename($sPath);
 				$aGetFileInfoArgs['Path'] = \dirname($sPath);
 				$oFileInfo = false;
-				\CApi::GetModuleManager()->broadcastEvent(
+				\Aurora\System\Api::GetModuleManager()->broadcastEvent(
 					'Files', 
 					'GetFileInfo::after', 
 					$aGetFileInfoArgs, 
@@ -312,7 +312,7 @@ class FilesZipFolderModule extends \AApiModule
 			$aArgs['Name'] = \basename($sPath);
 			$aArgs['Path'] = \dirname($sPath);
 			$oFileInfo = false;
-			\CApi::GetModuleManager()->broadcastEvent(
+			\Aurora\System\Api::GetModuleManager()->broadcastEvent(
 				'Files', 
 				'GetFileInfo::after', 
 				$aArgs, 
@@ -354,7 +354,7 @@ class FilesZipFolderModule extends \AApiModule
 			$aArgs['Name'] = \basename($sPath);
 			$aArgs['Path'] = \dirname($sPath);
 			$oFileInfo = false;
-			\CApi::GetModuleManager()->broadcastEvent(
+			\Aurora\System\Api::GetModuleManager()->broadcastEvent(
 				'Files', 
 				'GetFileInfo::after', 
 				$aArgs, 
