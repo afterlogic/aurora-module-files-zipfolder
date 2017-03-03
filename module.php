@@ -2,7 +2,7 @@
 
 namespace Aurora\Modules;
 
-class FilesZipFolderModule extends \Aurora\System\AbstractModule
+class FilesZipFolderModule extends \Aurora\System\Module\AbstractModule
 {
 	/***** private functions *****/
 	/**
