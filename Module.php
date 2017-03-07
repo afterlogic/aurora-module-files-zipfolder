@@ -376,7 +376,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function onBeforeCopy($aArgs, &$mResult)
 	{
-		return true;
 	}		
 	
 	/**
