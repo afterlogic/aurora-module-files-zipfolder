@@ -229,8 +229,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 				$aPathInfo = \pathinfo($oItem->Name);
 				if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
 				{
-					$oItem->MainAction = 'list';
-					$oItem->UnshiftAction('list');
+					$oItem->UnshiftAction(array(
+						'list' => array()
+					));
 				}
 			}
 		}
