@@ -136,7 +136,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			);
 			if ($oFileInfo)
 			{
-				$za = new ZipArchive(); 
+				$za = new \ZipArchive(); 
 				$za->open($oFileInfo->RealPath); 
 				$mResult = $za->getStream($sFileName);
 				if (\is_resource($mResult))
@@ -221,6 +221,36 @@ class Module extends \Aurora\System\Module\AbstractModule
 							{
 								$oItem->Name = $sName;
 								$aItems[$sName] = $oItem;
+							}
+							
+							if ($oItem->IsFolder)
+							{
+								$oItem->AddAction([
+									'list' => []
+								]);
+							}
+							else
+							{
+								$oItem->AddAction([
+									'view' => [
+										'url' => '?download-file/' . $oItem->getHash() .'/view'
+									]
+								]);
+								$oItem->AddAction([
+									'download' => [
+										'url' => '?download-file/' . $oItem->getHash()
+									]
+								]);
+								
+								$sMimeType = \MailSo\Base\Utils::MimeContentType($sName);
+								$oSettings =& \Aurora\System\Api::GetSettings();
+								$iThumbnailLimit = ((int) $oSettings->GetConf('ThumbnailMaxFileSizeMb', 5)) * 1024 * 1024;
+								if ($oSettings->GetConf('AllowThumbnail', true) &&
+										$oItem->Size < $iThumbnailLimit && \Aurora\System\Utils::IsGDImageMimeTypeSuppoted($sMimeType, $sName))
+								{
+									$oItem->Thumb = true;
+									$oItem->ThumbnailLink = '?download-file/' . $oItem->getHash() .'/thumb';
+								}
 							}
 						}
 					}
