@@ -99,6 +99,16 @@ class Module extends \Aurora\System\Module\AbstractModule
 		return $mResult;
 	}	
 	
+	public function getItemHash($oItem)
+	{
+		return \Aurora\System\Api::EncodeKeyValues(array(
+			'UserId' => \Aurora\System\Api::getAuthenticatedUserId(), 
+			'Type' => $oItem->TypeStr,
+			'Path' => $oItem->FullPath,
+			'Name' => $oItem->Name
+		));			
+	}
+	
 	/**
 	 * Writes to the $mResult variable open file source if $sType is DropBox account type.
 	 * 
@@ -225,12 +235,12 @@ class Module extends \Aurora\System\Module\AbstractModule
 							{
 								$oItem->AddAction([
 									'view' => [
-										'url' => '?download-file/' . $oItem->getHash() .'/view'
+										'url' => '?download-file/' . $this->getItemHash($oItem) .'/view'
 									]
 								]);
 								$oItem->AddAction([
 									'download' => [
-										'url' => '?download-file/' . $oItem->getHash()
+										'url' => '?download-file/' . $this->getItemHash($oItem)
 									]
 								]);
 								
@@ -241,7 +251,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 										$oItem->Size < $iThumbnailLimit && \Aurora\System\Utils::IsGDImageMimeTypeSuppoted($sMimeType, $sName))
 								{
 									$oItem->Thumb = true;
-									$oItem->ThumbnailLink = '?download-file/' . $oItem->getHash() .'/thumb';
+									$oItem->ThumbnailLink = '?download-file/' . $this->getItemHash($oItem) .'/thumb';
 								}
 							}
 						}
