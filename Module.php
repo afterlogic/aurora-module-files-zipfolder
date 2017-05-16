@@ -251,7 +251,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 										$oItem->Size < $iThumbnailLimit && \Aurora\System\Utils::IsGDImageMimeTypeSuppoted($sMimeType, $sName))
 								{
 									$oItem->Thumb = true;
-									$oItem->ThumbnailLink = '?download-file/' . $this->getItemHash($oItem) .'/thumb';
+									$oItem->ThumbnailUrl = '?download-file/' . $this->getItemHash($oItem) .'/thumb';
 								}
 							}
 						}
