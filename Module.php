@@ -69,7 +69,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	protected function populateFileInfo($sType, $oClient, $aData)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$mResult = false;
 		if ($aData && \is_array($aData))
