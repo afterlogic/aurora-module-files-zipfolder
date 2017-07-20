@@ -123,6 +123,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function onGetFile($aArgs, &$mResult)
 	{
 		$sPath = $aArgs['Path'];
+		if (\strpos($sPath, '$ZIP:'))
+		{
+			list($sPath, $sIndex) = \explode('$ZIP:', $sPath);
+		}
 		$aPathInfo = \pathinfo($sPath);
 		if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
 		{
@@ -140,10 +144,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 			{
 				$za = new \ZipArchive(); 
 				$za->open($oFileInfo->RealPath); 
-				$mResult = $za->getStream($sFileName);
+				$mResult = $za->getStream($sIndex);
 				if (\is_resource($mResult))
 				{
-					$aArgs['Name'] = \basename($sFileName);
+					$aArgs['Name'] = \basename($sIndex);
 					return true;
 				}
 			}
