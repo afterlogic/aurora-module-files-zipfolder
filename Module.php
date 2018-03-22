@@ -24,8 +24,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function init() 
 	{
 		$this->subscribeEvent('Files::GetFile', array($this, 'onGetFile'), 50);
-		$this->subscribeEvent('Files::GetFiles::before', array($this, 'onBeforeGetFiles'), 50);
-		$this->subscribeEvent('Files::GetFiles::after', array($this, 'onAfterGetFiles'), 50);
+		$this->subscribeEvent('Files::GetFiles::before', array($this, 'onBeforeGetFiles'), 500);
+		$this->subscribeEvent('Files::GetFiles::after', array($this, 'onAfterGetFiles'), 200);
 		$this->subscribeEvent('Files::CreateFolder::before', array($this, 'onBeforeCreateFolder'), 50);
 		$this->subscribeEvent('Files::CreateFile', array($this, 'onCreateFile'), 50);
 		$this->subscribeEvent('Files::Delete::after', array($this, 'onAfterDelete'), 50);
@@ -277,9 +277,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function onAfterGetFiles($aArgs, &$mResult)
 	{
-		if (isset($mResult['Items']) && \is_array($mResult['Items']))
+		if (isset($mResult) && \is_array($mResult))
 		{
-			foreach($mResult['Items'] as $oItem)
+			foreach($mResult as $oItem)
 			{
 				$aPathInfo = \pathinfo($oItem->Name);
 				if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
