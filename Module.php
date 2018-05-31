@@ -278,9 +278,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function onAfterGetFiles($aArgs, &$mResult)
 	{
-		if (isset($mResult) && \is_array($mResult))
+		if (isset($mResult) && \is_array($mResult) && isset($mResult['Items']))
 		{
-			foreach($mResult as $oItem)
+			foreach($mResult['Items'] as $oItem)
 			{
 				$aPathInfo = \pathinfo($oItem->Name);
 				if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
