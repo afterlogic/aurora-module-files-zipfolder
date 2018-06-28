@@ -149,7 +149,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				if (\is_resource($mResult))
 				{
 					$aArgs['Name'] = \basename($sIndex);
-					return true;
+					return false;
 				}
 			}
 		}
@@ -267,7 +267,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			}
 		}
 		
-		return $bResult;
+		return !$bResult;
 	}
 	
 	/**
@@ -349,7 +349,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				}
 			}
 		}
-		return $bResult;
+		return !$bResult;
 	}	
 
 	/**
@@ -390,9 +390,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 				}
 				$mResult = $za->renameName($sName, $sNewFullPath);
 				$za->close();
+				return !$mResult;
 			}
 		}
-		return $mResult;
 	}	
 
 	/**
