@@ -391,8 +391,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 				$mResult = $za->renameName($sName, $sNewFullPath);
 				$za->close();
 			}
+			return $mResult;
 		}
-		return $mResult;
 	}	
 
 	/**
