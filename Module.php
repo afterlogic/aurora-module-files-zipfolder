@@ -33,7 +33,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$this->subscribeEvent('Files::Rename::after', array($this, 'onAfterRename'), 50);
 		$this->subscribeEvent('Files::Move::before', array($this, 'onBeforeMove'), 50);
 		$this->subscribeEvent('Files::Copy::before', array($this, 'onBeforeCopy'), 50); 
-		$this->subscribeEvent('Files::GetFileInfo::after', array($this, 'onAfterGetFileInfo'), 50);
+		$this->subscribeEvent('Files::GetFileInfo::after', array($this, 'onAfterGetFileInfo'), 500);
+		$this->subscribeEvent('Files::PopulateFileItem::after', array($this, 'onAfterPopulateFileItem'));
 		
 	}
 	
@@ -274,22 +275,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 				}
 				return true;
 			}
-			else
-			{
-				if (isset($mResult) && \is_array($mResult))
-				{
-					foreach($mResult as $oItem)
-					{
-						$aPathInfo = \pathinfo($oItem->Name);
-						if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
-						{
-							$oItem->UnshiftAction(array(
-								'list' => array()
-							));
-						}
-					}
-				}
-			}
 		}		
 	}	
 
@@ -447,7 +432,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function onAfterGetFileInfo($aArgs, &$mResult)
 	{
-		return true;
 	}	
 	
 	/**
@@ -456,8 +440,18 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @param object $oItem
 	 * @return boolean
 	 */
-	public function onPopulateFileItem($oItem, &$mResult)
+	public function onAfterPopulateFileItem($oItem, &$mResult)
 	{
+		if (isset($mResult))
+		{
+			$aPathInfo = \pathinfo($mResult->Name);
+			if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
+			{
+				$mResult->UnshiftAction(array(
+					'list' => array()
+				));
+			}
+		}
 	}	
 	/***** private functions *****/
 }
