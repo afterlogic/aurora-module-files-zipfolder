@@ -25,15 +25,16 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function init() 
 	{
 		$this->subscribeEvent('Files::GetFile', array($this, 'onGetFile'), 50);
-		$this->subscribeEvent('Files::GetItems::before', array($this, 'onBeforeGetItems'), 500);
-		$this->subscribeEvent('Files::GetItems::after', array($this, 'onAfterGetItems'), 200);
+//		$this->subscribeEvent('Files::GetItems::before', array($this, 'onBeforeGetItems'), 500);
+		$this->subscribeEvent('Files::GetItems::after', array($this, 'onAfterGetItems'), 50);
 		$this->subscribeEvent('Files::CreateFolder::before', array($this, 'onBeforeCreateFolder'), 50);
 		$this->subscribeEvent('Files::CreateFile', array($this, 'onCreateFile'), 50);
 		$this->subscribeEvent('Files::Delete::after', array($this, 'onAfterDelete'), 50);
 		$this->subscribeEvent('Files::Rename::after', array($this, 'onAfterRename'), 50);
 		$this->subscribeEvent('Files::Move::before', array($this, 'onBeforeMove'), 50);
 		$this->subscribeEvent('Files::Copy::before', array($this, 'onBeforeCopy'), 50); 
-		$this->subscribeEvent('Files::GetFileInfo::after', array($this, 'onAfterGetFileInfo'));
+		$this->subscribeEvent('Files::GetFileInfo::after', array($this, 'onAfterGetFileInfo'), 50);
+		
 	}
 	
 	/**
@@ -131,9 +132,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$aPathInfo = \pathinfo($sPath);
 		if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
 		{
-			$sFileName = $aArgs['Name'];
-			$aArgs['Name'] = \basename($sPath);
-			$aArgs['Path'] = \dirname($sPath);
+			$aArgs['Id'] = \basename($sPath);
+			$aArgs['Path'] = \dirname($sPath) === '\\' ? '' : \dirname($sPath);
 			$oFileInfo = false;
 			\Aurora\System\Api::GetModuleManager()->broadcastEvent(
 				'Files', 
@@ -141,6 +141,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				$aArgs, 
 				$oFileInfo
 			);
+
 			if ($oFileInfo)
 			{
 				$za = new \ZipArchive(); 
@@ -155,9 +156,15 @@ class Module extends \Aurora\System\Module\AbstractModule
 		}
 	}	
 
-	public function onBeforeGetItems(&$aArgs, &$mResult)
+	/**
+	 * Writes to $aData variable list of DropBox files if $aData['Type'] is DropBox account type.
+	 * 
+	 * @ignore
+	 * @param array $aData Is passed by reference.
+	 */
+	public function onAfterGetItems($aArgs, &$mResult)
 	{
-		$bResult = false;
+		
 		if (isset($aArgs['Path']))
 		{
 			$sPath = $aArgs['Path'];
@@ -170,6 +177,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
 			{
 				$aGetFileInfoArgs = array(
+					'Id' => \basename($sPath),
 					'Name' => \basename($sPath),
 					'Path' => \trim(\dirname($sPath), '\\'),
 					'UserId' => $aArgs['UserId'],
@@ -182,6 +190,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 					$aGetFileInfoArgs, 
 					$oFileInfo
 				);
+
 				if ($oFileInfo)
 				{
 					$za = new \ZipArchive(); 
@@ -261,36 +270,27 @@ class Module extends \Aurora\System\Module\AbstractModule
 							}
 						}
 					}
-					$mResult['Items'] = \array_values($aItems);
+					$mResult = \array_values($aItems);
 				}
-				$bResult = true;
+				return true;
 			}
-		}
-		
-		return $bResult;
-	}
-	
-	/**
-	 * Writes to $aData variable list of DropBox files if $aData['Type'] is DropBox account type.
-	 * 
-	 * @ignore
-	 * @param array $aData Is passed by reference.
-	 */
-	public function onAfterGetItems($aArgs, &$mResult)
-	{
-		if (isset($mResult) && \is_array($mResult) && isset($mResult['Items']))
-		{
-			foreach($mResult['Items'] as $oItem)
+			else
 			{
-				$aPathInfo = \pathinfo($oItem->Name);
-				if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
+				if (isset($mResult) && \is_array($mResult))
 				{
-					$oItem->UnshiftAction(array(
-						'list' => array()
-					));
+					foreach($mResult as $oItem)
+					{
+						$aPathInfo = \pathinfo($oItem->Name);
+						if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
+						{
+							$oItem->UnshiftAction(array(
+								'list' => array()
+							));
+						}
+					}
 				}
 			}
-		}
+		}		
 	}	
 
 	/**
@@ -447,6 +447,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function onAfterGetFileInfo($aArgs, &$mResult)
 	{
+		return true;
 	}	
 	
 	/**
