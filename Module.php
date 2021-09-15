@@ -143,7 +143,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				$oFileInfo
 			);
 
-			if ($oFileInfo)
+			if ($oFileInfo && class_exists('ZipArchive'))
 			{
 				$za = new \ZipArchive(); 
 				$za->open($oFileInfo->RealPath); 
@@ -192,7 +192,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 					$oFileInfo
 				);
 
-				if ($oFileInfo)
+				if ($oFileInfo && class_exists('ZipArchive'))
 				{
 					$za = new \ZipArchive(); 
 					$za->open($oFileInfo->RealPath); 
@@ -325,7 +325,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 					$aGetFileInfoArgs, 
 					$oFileInfo
 				);
-				if ($oFileInfo)
+				if ($oFileInfo && class_exists('ZipArchive'))
 				{
 					$za = new \ZipArchive(); 
 					$za->open($oFileInfo->RealPath);
@@ -360,7 +360,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				$aArgs, 
 				$oFileInfo
 			);
-			if ($oFileInfo)
+			if ($oFileInfo && class_exists('ZipArchive'))
 			{
 				$za = new \ZipArchive(); 
 				$za->open($oFileInfo->RealPath);
@@ -402,7 +402,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				$aArgs, 
 				$oFileInfo
 			);
-			if ($oFileInfo)
+			if ($oFileInfo && class_exists('ZipArchive'))
 			{
 				$za = new \ZipArchive(); 
 				$za->open($oFileInfo->RealPath); 
