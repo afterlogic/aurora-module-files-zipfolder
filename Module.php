@@ -445,7 +445,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		if (isset($mResult))
 		{
 			$aPathInfo = \pathinfo($mResult->Name);
-			if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
+			if (class_exists('ZipArchive') && isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip')
 			{
 				$mResult->UnshiftAction(array(
 					'list' => array()
