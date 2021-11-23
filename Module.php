@@ -26,7 +26,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		$this->subscribeEvent('Files::GetFile', array($this, 'onGetFile'), 50);
 //		$this->subscribeEvent('Files::GetItems::before', array($this, 'onBeforeGetItems'), 500);
-		$this->subscribeEvent('Files::GetItems::after', array($this, 'onAfterGetItems'), 50);
+		$this->subscribeEvent('Files::GetItems', array($this, 'onGetItems'), 50);
 		$this->subscribeEvent('Files::CreateFolder::before', array($this, 'onBeforeCreateFolder'), 50);
 		$this->subscribeEvent('Files::CreateFile', array($this, 'onCreateFile'), 50);
 		$this->subscribeEvent('Files::Delete::after', array($this, 'onAfterDelete'), 50);
@@ -163,7 +163,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @ignore
 	 * @param array $aData Is passed by reference.
 	 */
-	public function onAfterGetItems($aArgs, &$mResult)
+	public function onGetItems($aArgs, &$mResult)
 	{
 		
 		if (isset($aArgs['Path']))
