@@ -452,6 +452,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 				));
 			}
 		}
+
+		return false;
 	}	
 	/***** private functions *****/
 }
