@@ -16,6 +16,15 @@ namespace Aurora\Modules\FilesZipFolder;
  */
 class Module extends \Aurora\System\Module\AbstractModule
 {
+    /**
+     *
+     * @return Module
+     */
+    public static function Decorator()
+    {
+        return parent::Decorator();
+    }
+
     /***** private functions *****/
     /**
      * Initializes FilesZipFolder Module.
@@ -65,7 +74,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      * Populates file info.
      *
      * @param string $sType Service type.
-     * @param \Dropbox\Client $oClient DropBox client.
+     * @param \Kunnu\Dropbox\Dropbox $oClient DropBox client.
      * @param array $aData Array contains information about file.
      * @return \Aurora\Modules\Files\Classes\FileItem|false
      */
@@ -87,7 +96,8 @@ class Module extends \Aurora\System\Module\AbstractModule
             $mResult->Path = !empty($sPath) ? '/'.$sPath : $sPath;
             $mResult->Size = $aData['bytes'];
             //			$bResult->Owner = $oSocial->Name;
-            $mResult->LastModified = \date_timestamp_get($oClient->parseDateTime($aData['modified']));
+            $dt = \DateTime::createFromFormat("D, d M Y H:i:s T", $aData['modified']);
+            $mResult->LastModified = \date_timestamp_get($dt);
             $mResult->Shared = isset($aData['shared']) ? $aData['shared'] : false;
             $mResult->FullPath = $mResult->Name !== '' ? $mResult->Path . '/' . $mResult->Name : $mResult->Path ;
 
@@ -112,21 +122,18 @@ class Module extends \Aurora\System\Module\AbstractModule
      * Writes to the $mResult variable open file source if $sType is DropBox account type.
      *
      * @ignore
-     * @param int $iUserId Identifier of the authenticated user.
-     * @param string $sType Service type.
-     * @param string $sPath File path.
-     * @param string $sName File name.
-     * @param boolean $bThumb **true** if thumbnail is expected.
+     * @param array $aArgs
      * @param mixed $mResult
      */
     public function onGetFile($aArgs, &$mResult)
     {
+        $sIndex = null;
         $sPath = $aArgs['Path'];
         if (\strpos($sPath, '$ZIP:')) {
             list($sPath, $sIndex) = \explode('$ZIP:', $sPath);
         }
         $aPathInfo = \pathinfo($sPath);
-        if (isset($aPathInfo['extension']) && $aPathInfo['extension'] === 'zip') {
+        if (isset($aPathInfo['extension']) && \strtolower($aPathInfo['extension']) === 'zip' && $sIndex != null) {
             $aArgs['Id'] = \basename($sPath);
             $aArgs['Path'] = \dirname($sPath) === '\\' ? '' : \dirname($sPath);
             $oFileInfo = false;
@@ -153,7 +160,8 @@ class Module extends \Aurora\System\Module\AbstractModule
      * Writes to $aData variable list of DropBox files if $aData['Type'] is DropBox account type.
      *
      * @ignore
-     * @param array $aData Is passed by reference.
+     * @param array $aArgs Is passed by reference.
+     * @param mixed $mResult Is passed by reference.
      */
     public function onGetItems($aArgs, &$mResult)
     {
@@ -255,7 +263,8 @@ class Module extends \Aurora\System\Module\AbstractModule
      * Creates folder if $aData['Type'] is DropBox account type.
      *
      * @ignore
-     * @param array $aData Is passed by reference.
+     * @param array $aArgs Is passed by reference.
+     * @param mixed $mResult Is passed by reference.
      */
     public function onBeforeCreateFolder($aArgs, &$mResult)
     {
@@ -265,17 +274,19 @@ class Module extends \Aurora\System\Module\AbstractModule
      * Creates file if $aData['Type'] is DropBox account type.
      *
      * @ignore
-     * @param array $aData
+     * @param array $aArgs Is passed by reference.
+     * @param mixed $mResult Is passed by reference.
      */
-    public function onCreateFile($aArgs, &$Result)
+    public function onCreateFile($aArgs, &$mResult)
     {
     }
 
     /**
-     * Deletes file if $aData['Type'] is DropBox account type.
+     * Deletes file if $aArgs['Type'] is DropBox account type.
      *
      * @ignore
-     * @param array $aData
+     * @param array $aArgs Is passed by reference.
+     * @param mixed $mResult Is passed by reference.
      */
     public function onAfterDelete($aArgs, &$mResult)
     {
@@ -308,10 +319,11 @@ class Module extends \Aurora\System\Module\AbstractModule
     }
 
     /**
-     * Renames file if $aData['Type'] is DropBox account type.
+     * Renames file if $aArgs['Type'] is DropBox account type.
      *
      * @ignore
-     * @param array $aData
+     * @param array $aArgs Is passed by reference.
+     * @param mixed $mResult Is passed by reference.
      */
     public function onAfterRename($aArgs, &$mResult)
     {
@@ -346,10 +358,11 @@ class Module extends \Aurora\System\Module\AbstractModule
     }
 
     /**
-     * Moves file if $aData['Type'] is DropBox account type.
+     * Moves file if $aArgs['Type'] is DropBox account type.
      *
      * @ignore
-     * @param array $aData
+     * @param array $aArgs Is passed by reference.
+     * @param mixed $mResult Is passed by reference.
      */
     public function onBeforeMove($aArgs, &$mResult)
     {
@@ -374,10 +387,11 @@ class Module extends \Aurora\System\Module\AbstractModule
     }
 
     /**
-     * Copies file if $aData['Type'] is DropBox account type.
+     * Copies file
      *
      * @ignore
-     * @param array $aData
+     * @param array $aArgs Is passed by reference.
+     * @param mixed $mResult Is passed by reference.
      */
     public function onBeforeCopy($aArgs, &$mResult)
     {
@@ -386,12 +400,8 @@ class Module extends \Aurora\System\Module\AbstractModule
     /**
      * @ignore
      * @todo not used
-     * @param object $oAccount
-     * @param string $sType
-     * @param string $sPath
-     * @param string $sName
-     * @param mixed $mResult
-     * @param boolean $bBreak
+     * @param array $aArgs Is passed by reference.
+     * @param mixed $mResult Is passed by reference.
      */
     public function onAfterGetFileInfo($aArgs, &$mResult)
     {
@@ -401,6 +411,8 @@ class Module extends \Aurora\System\Module\AbstractModule
      * @ignore
      * @todo not used
      * @param object $oItem
+     * @param mixed $mResult Is passed by reference.
+     * 
      * @return boolean
      */
     public function onAfterPopulateFileItem($oItem, &$mResult)
