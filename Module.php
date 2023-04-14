@@ -412,7 +412,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      * @todo not used
      * @param object $oItem
      * @param mixed $mResult Is passed by reference.
-     * 
+     *
      * @return boolean
      */
     public function onAfterPopulateFileItem($oItem, &$mResult)
