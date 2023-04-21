@@ -260,8 +260,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 
                                 $sMimeType = \MailSo\Base\Utils::MimeContentType($sName);
                                 $oSettings =& \Aurora\System\Api::GetSettings();
-                                $iThumbnailLimit = ((int) $oSettings->GetValue('ThumbnailMaxFileSizeMb', 5)) * 1024 * 1024;
-                                if ($oSettings->GetValue('AllowThumbnail', true) &&
+                                $iThumbnailLimit = ((int) $oSettings->ThumbnailMaxFileSizeMb) * 1024 * 1024;
+                                if ($oSettings->AllowThumbnail &&
                                         $oItem->Size < $iThumbnailLimit && \Aurora\System\Utils::IsGDImageMimeTypeSuppoted($sMimeType, $sName)) {
                                     $oItem->Thumb = true;
                                     $oItem->ThumbnailUrl = '?download-file/' . $this->getItemHash($oItem) .'/thumb';
