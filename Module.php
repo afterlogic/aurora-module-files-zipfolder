@@ -110,7 +110,7 @@ class Module extends \Aurora\System\Module\AbstractModule
             $mResult->IsFolder = $aData['is_dir'];
             $mResult->Id = $this->getBaseName($aData['path']);
             $mResult->Name = $mResult->Id;
-            $mResult->Path = !empty($sPath) ? '/'.$sPath : $sPath;
+            $mResult->Path = !empty($sPath) ? '/' . $sPath : $sPath;
             $mResult->Size = $aData['bytes'];
             //			$bResult->Owner = $oSocial->Name;
             $dt = \DateTime::createFromFormat("D, d M Y H:i:s T", $aData['modified']);
@@ -249,7 +249,7 @@ class Module extends \Aurora\System\Module\AbstractModule
                             } else {
                                 $oItem->AddAction([
                                     'view' => [
-                                        'url' => '?download-file/' . $this->getItemHash($oItem) .'/view'
+                                        'url' => '?download-file/' . $this->getItemHash($oItem) . '/view'
                                     ]
                                 ]);
                                 $oItem->AddAction([
@@ -259,12 +259,12 @@ class Module extends \Aurora\System\Module\AbstractModule
                                 ]);
 
                                 $sMimeType = \MailSo\Base\Utils::MimeContentType($sName);
-                                $oSettings =& \Aurora\System\Api::GetSettings();
+                                $oSettings = &\Aurora\System\Api::GetSettings();
                                 $iThumbnailLimit = ((int) $oSettings->ThumbnailMaxFileSizeMb) * 1024 * 1024;
                                 if ($oSettings->AllowThumbnail &&
                                         $oItem->Size < $iThumbnailLimit && \Aurora\System\Utils::IsGDImageMimeTypeSuppoted($sMimeType, $sName)) {
                                     $oItem->Thumb = true;
-                                    $oItem->ThumbnailUrl = '?download-file/' . $this->getItemHash($oItem) .'/thumb';
+                                    $oItem->ThumbnailUrl = '?download-file/' . $this->getItemHash($oItem) . '/thumb';
                                 }
                             }
                         }
@@ -283,9 +283,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      * @param array $aArgs Is passed by reference.
      * @param mixed $mResult Is passed by reference.
      */
-    public function onBeforeCreateFolder($aArgs, &$mResult)
-    {
-    }
+    public function onBeforeCreateFolder($aArgs, &$mResult) {}
 
     /**
      * Creates file if $aData['Type'] is DropBox account type.
@@ -294,9 +292,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      * @param array $aArgs Is passed by reference.
      * @param mixed $mResult Is passed by reference.
      */
-    public function onCreateFile($aArgs, &$mResult)
-    {
-    }
+    public function onCreateFile($aArgs, &$mResult) {}
 
     /**
      * Deletes file if $aArgs['Type'] is DropBox account type.
@@ -410,9 +406,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      * @param array $aArgs Is passed by reference.
      * @param mixed $mResult Is passed by reference.
      */
-    public function onBeforeCopy($aArgs, &$mResult)
-    {
-    }
+    public function onBeforeCopy($aArgs, &$mResult) {}
 
     /**
      * @ignore
@@ -420,9 +414,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      * @param array $aArgs Is passed by reference.
      * @param mixed $mResult Is passed by reference.
      */
-    public function onAfterGetFileInfo($aArgs, &$mResult)
-    {
-    }
+    public function onAfterGetFileInfo($aArgs, &$mResult) {}
 
     /**
      * @ignore
